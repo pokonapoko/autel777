@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width">
+  <title>AUTEL 777</title>
+  <style>
+    body{background:#0a0a0a;color:#fff;font-family:monospace;text-align:center;padding-top:20vh;margin:0}
+    .etat{font-size:20vw;font-weight:900}
+    .plus{color:#00FF00} .zero{color:#FFD700} .moins{color:#FF0000}
+    .log{margin-top:40px;font-size:14px;opacity:0.7}
+  </style>
+</head>
+<body>
+  <div id="etat" class="etat zero">0</div>
+  <div id="log" class="log">Attente du Feu...</div>
+  <script>
+    async function fetchLog(){
+      const r = await fetch('/api/push');
+      const data = await r.json();
+      if(data.length){
+        const last = data[data.length-1];
+        const el = document.getElementById('etat');
+        el.textContent = last.etat;
+        el.className = 'etat ' + (last.etat==='+'?'plus':last.etat==='-'?'moins':'zero');
+        document.getElementById('log').textContent = last.time + ' ETAT:' + last.etat;
+      }
+    }
+    fetchLog(); setInterval(fetchLog, 5000);
+  </script>
+</body>
+</html>
