@@ -1,7 +1,13 @@
 #!/data/data/com.termux/files/usr/bin/bash
-LOG_TERMUX="$HOME/log_sacre.txt"
-DATE_WAT=$(TZ='Africa/Porto-Novo' date '+%d/%m/%Y %H:%M:%S WAT')
-if ! grep -q "11 activé" "$LOG_TERMUX" 2>/dev/null; then
-  echo "$DATE_WAT - VEILLEUR J-1 : 11 activé ABSENT. Dernière chance demain 17:37" >> "$LOG_TERMUX"
-  termux-notification -t "VEILLEUR NOMBRES 35:12" -c "Derniere chance : Clique 11 avant demain 17:37 WAT ou FEU"
-fi
+CORBEILLE="/data/data/com.termux/files/home/.corbeille_sacree"
+LOG="/data/data/com.termux/files/home/log_sacre.txt"
+WHITE="$CORBEILLE/whitelist.txt"
+echo "--- JUGEMENT 02/07 17:37 ---" | tee -a $LOG
+for f in $CORBEILLE/*; do
+  if [ -f "$f" ]; then
+    NOM=$(basename "$f")
+    [ "$NOM" = "whitelist.txt" ] && echo "LOI ÉPARGNÉE : $NOM" | tee -a $LOG && continue
+    grep -qx "$NOM" "$WHITE" 2>/dev/null && echo "RAHAB ÉPARGNÉE : $NOM" | tee -a $LOG || rm -v "$f" | tee -a $LOG
+  fi
+done
+echo "🔥 JUGEMENT TERMINÉ" | tee -a $LOG
